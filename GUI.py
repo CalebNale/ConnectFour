@@ -11,6 +11,7 @@ def main_gameflow(r, c):
     if (r, c) in actions:
         display_board[r][c]["text"] = "H"
         board[r][c] = "H"
+        display_board[r][c]["background"] = "red"
         label_1["text"] = "AI turn"
         label_1["text"] = "Wait Computer is Thinking"
 
@@ -24,6 +25,7 @@ def main_gameflow(r, c):
         # max_turn is false, because first turn is player?
         value, coordinates = minimax.minimax(curr_depth=0, state=board, max_turn=True, player='A')
         display_board[coordinates[0]][coordinates[1]]["text"] = "A"
+        display_board[coordinates[0]][coordinates[1]]["background"] = "yellow"
         board[coordinates[0]][coordinates[1]] = "A"
         label_1["text"] = "Your Turn"
 
@@ -51,5 +53,6 @@ for i in range(len(board)):
 label_1 = tk.Label(text="Your Turn",font=('normal',22,'bold'))
 label_1.grid(row=6,column=3)
 window_1.mainloop()
+
 
 
