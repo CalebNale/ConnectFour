@@ -133,7 +133,7 @@ def heuristic(state, player):
                     # evaluate all lists
                     for (list_val, list_cord) in lists:
                         if len(list_val) == limit+1:
-                            game_state_score += score(list_val, limit+1)
+                            game_state_score += score(list_val, limit+1, player)
                             for coordinates in list_cord:
                                 visited.add(coordinates)
 
@@ -141,57 +141,21 @@ def heuristic(state, player):
     return game_state_score
 
 
-def score(list_val, size):
+def score(list_val, size, player):
     score = 0
     if size == 3:
-        if list_val[0] == "A":
+        if list_val[0] == player:
             score += 50
         else:
             score -= 50
     elif size == 2:
-        if list_val[0] == "A":
+        if list_val[0] == player:
             score += 25
         else:
             score -= 25
     elif size == 1:
-        if list_val[0] == "A":
+        if list_val[0] == player:
             score += 10
         else:
             score -= 10
     return score
-
-
-"""
-# this heuristic counts how many possible wins this board has for the player
-# negated by how many possible wins this board has for the other player
-def heuristic(state, player):
-    game_win_count = 0
-    game_loss_count = 0
-    for row in range(len(state)):  # check every possible win condition, empty or players tiles
-        for col in range(len(state[0])):
-            if row + 3 < len(state):  # check connecting dots vertically
-                if ((state[row][col] == player or state[row][col] == '')
-                        and (state[row + 1][col] == player or state[row + 1][col] == '')
-                        and (state[row + 2][col] == player or state[row + 2][col] == '')
-                        and (state[row + 3][col] == player or state[row + 3][col] == '')):
-                    game_win_count += 1
-                else:
-                    game_loss_count += 1
-            if col + 3 < len(state[0]):  # check connecting dots horizontally
-                if ((state[row][col] == player or state[row][col] == '')
-                        and (state[row][col + 1] == player or state[row][col + 1] == '')
-                        and (state[row][col + 2] == player or state[row][col + 2] == '')
-                        and (state[row][col + 3] == player or state[row][col + 3] == '')):
-                    game_win_count += 1
-                else:
-                    game_loss_count += 1
-            if row + 3 < len(state) and col + 3 < len(state[0]):  # check connecting dots diagonally
-                if ((state[row][col] == player or state[row][col] == '')
-                        and (state[row + 1][col + 1] == player or state[row + 1][col + 1] == '')
-                        and (state[row + 2][col + 2] == player or state[row + 2][col + 2] == '')
-                        and (state[row + 3][col + 3] == player or state[row + 3][col + 3] == '')):
-                    game_win_count += 1
-                else:
-                    game_loss_count += 1
-    return game_win_count - game_loss_count
-"""
