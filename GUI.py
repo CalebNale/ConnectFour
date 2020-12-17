@@ -39,7 +39,7 @@ def main_gameflow(r, c):
 window_1 = tk.Tk()
 window_1.title('Connect Four')
 
-minimax = Minimax.Minimax(3)
+minimax = Minimax.Minimax(6)
 
 board = [['' for _ in range(6)] for _ in range(6)]
 display_board = [['' for _ in range(6)] for _ in range(6)]
