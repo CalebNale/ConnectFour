@@ -19,9 +19,9 @@ def action(state):
     return actions
 
 
-def result(state, action):
+def result(state, move, player):
     new_state = deepcopy(state)
-    new_state[action[0]][action[1]] = "A"
+    new_state[move[0]][move[1]] = player
     return new_state
 
 
@@ -30,6 +30,51 @@ def terminal(state):
         return True
     else:
         return False
+
+
+# tells if the given state has a winning player, and which player it is
+def win(state):
+    for row in range(len(state)):
+        for col in range(len(state[0])):
+            if row + 3 < len(state):  # check connecting dots vertically
+                if state[row][col] != '' \
+                        and state[row][col] == state[row+1][col] == state[row+2][col] == state[row+3][col]:
+                    return state[row][col]
+            if col + 3 < len(state[0]):  # check connecting dots horizontally
+                if state[row][col] != '' \
+                        and state[row][col] == state[row][col+1] == state[row][col+2] == state[row][col+3]:
+                    return state[row][col]
+            if row + 3 < len(state) and col+3 < len(state[0]):  # check connecting dots diagonally downwards
+                if state[row][col] != '' \
+                        and state[row][col] == state[row+1][col+1] == state[row+2][col+2] == state[row+3][col+3]:
+                    return state[row][col]
+            if row + 3 < len(state) and col-3 >= 0:  # check connecting dots diagonally upwards
+                if state[row][col] != '' \
+                        and state[row][col] == state[row+1][col-1] == state[row+2][col-2] == state[row+3][col-3]:
+                    return state[row][col]
+    return ''  # no winner yet
+
+
+# tells if the given state is a draw game
+def draw(state):
+    for row in range(len(state)):
+        for col in range(len(state[0])):
+            if state[row][col] == '':
+                return False
+    return True
+
+
+# evaluates the state of the board for the given player
+def evaluation_function(state, player):
+    if terminal(state):
+        if win(state) == player:
+            return float('inf')      # maximum possible score if the player wins
+        elif draw(state):
+            return 0  # draw state gives 0
+        else:
+            return -float('inf')  # minimum possible if the other player wins
+    else:  # game is going we need to evaluate player points
+        return heuristic(state, player)
 
 
 def heuristic(state, player):
@@ -116,42 +161,37 @@ def score(list_val, size):
     return score
 
 
-# evaluates the state of the board for the given player
-def evaluation_function(state, player):
-    if terminal(state):
-        if win(state) == player:
-            return 1000      # maximum possible score if the player wins
-        elif draw(state):
-            return 0  # draw state gives 0
-        else:
-            return -1000  # minimum possible if the other player wins
-    else:  # game is going we need to evaluate player points
-        return heuristic(state, player)
-
-
-def win(state):
-    for row in range(len(state)):  # no need to check bottom right corner, every win is already evaluated by then
+"""
+# this heuristic counts how many possible wins this board has for the player
+# negated by how many possible wins this board has for the other player
+def heuristic(state, player):
+    game_win_count = 0
+    game_loss_count = 0
+    for row in range(len(state)):  # check every possible win condition, empty or players tiles
         for col in range(len(state[0])):
             if row + 3 < len(state):  # check connecting dots vertically
-                if state[row][col] != '' \
-                        and state[row][col] == state[row+1][col] == state[row+2][col] == state[row+3][col]:
-                    if state[row][col] == 'H':
-                        print("Human player is about to win!!!")
-                    return state[row][col]
+                if ((state[row][col] == player or state[row][col] == '')
+                        and (state[row + 1][col] == player or state[row + 1][col] == '')
+                        and (state[row + 2][col] == player or state[row + 2][col] == '')
+                        and (state[row + 3][col] == player or state[row + 3][col] == '')):
+                    game_win_count += 1
+                else:
+                    game_loss_count += 1
             if col + 3 < len(state[0]):  # check connecting dots horizontally
-                if state[row][col] != '' \
-                        and state[row][col] == state[row][col+1] == state[row][col+2] == state[row][col+3]:
-                    return state[row][col]
-            if row + 3 < len(state) and col+3 < len(state[0]):  # check connecting dots diagonally
-                if state[row][col] != '' \
-                        and state[row][col] == state[row+1][col+1] == state[row+2][col+2] == state[row+3][col+3]:
-                    return state[row][col]
-    return ''  # no winner yet
-
-
-def draw(state):
-    for row in range(len(state)):
-        for col in range(len(state[0])):
-            if state[row][col] == '':
-                return False
-    return True
+                if ((state[row][col] == player or state[row][col] == '')
+                        and (state[row][col + 1] == player or state[row][col + 1] == '')
+                        and (state[row][col + 2] == player or state[row][col + 2] == '')
+                        and (state[row][col + 3] == player or state[row][col + 3] == '')):
+                    game_win_count += 1
+                else:
+                    game_loss_count += 1
+            if row + 3 < len(state) and col + 3 < len(state[0]):  # check connecting dots diagonally
+                if ((state[row][col] == player or state[row][col] == '')
+                        and (state[row + 1][col + 1] == player or state[row + 1][col + 1] == '')
+                        and (state[row + 2][col + 2] == player or state[row + 2][col + 2] == '')
+                        and (state[row + 3][col + 3] == player or state[row + 3][col + 3] == '')):
+                    game_win_count += 1
+                else:
+                    game_loss_count += 1
+    return game_win_count - game_loss_count
+"""
